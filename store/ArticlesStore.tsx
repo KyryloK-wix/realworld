@@ -1,6 +1,6 @@
 import {makeAutoObservable} from 'mobx';
 
-const backendHost = 'https://localhost:3000'
+const backendHost = 'http://localhost:3000'
 
 // Define the response type
 interface ArticlesResponse {
@@ -18,11 +18,15 @@ class ArticlesStore {
         makeAutoObservable(this);
     }
 
-    // Action to fetch posts from an API
-    fetchPosts = async () => {
+    fetchLatestArticles = async () => {
         this.loading = true;
         try {
-            const response = await fetch(`${backendHost}/articles`);
+            const response = await fetch(`${backendHost}/api/articles?limit=20&offset=0`, {
+                method: 'GET',
+                headers: {'accept': 'application/json',}
+            });
+            // console.log(JSON.stringify(response));
+            // console.log(JSON.stringify(response.json()));
             const data: ArticlesResponse = await response.json();
             this.articles = data.articles;
             this.articlesCount = data.articlesCount
@@ -34,6 +38,6 @@ class ArticlesStore {
     };
 }
 
-const postStore = new ArticlesStore();
+const articlesStore = new ArticlesStore();
 
-export default postStore;
+export default articlesStore;

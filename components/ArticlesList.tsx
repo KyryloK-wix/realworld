@@ -1,7 +1,9 @@
 import {ScrollView, TouchableOpacity} from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import ArticlePreview from "@/components/ArticlePreview";
 import {useRouter} from 'expo-router';
+import {observer} from "mobx-react";
+import articlesStore from "@/store/ArticlesStore";
 
 export const HardCodedArticles = [
     {
@@ -24,29 +26,38 @@ export const HardCodedArticles = [
     }
 ];
 
-const ArticlesList = () => {
+
+const ArticlesList = observer(() => {
+    useEffect(() => {
+        // Fetch articles when the component mounts
+        articlesStore.fetchLatestArticles();
+    }, []);
+
     const router = useRouter();
+
+    console.log(JSON.stringify(articlesStore.articles))
 
     return (
         <ScrollView>
-            {HardCodedArticles.map((article, index) => (
-                <TouchableOpacity
-                    onPress={() => {
-                        router.push(`/blog/${article.id}`);
-                    }}>
-                    <ArticlePreview
-                        key={index}
-                        author={article.author}
-                        date={article.date}
-                        title={article.title}
-                        content={article.content}
-                        authorImage={article.authorImage}
-                        onLike={article.onLike}
-                    />
-                </TouchableOpacity>
-            ))}
+            {
+                articlesStore.articles.map((article, index) => (
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push(`/blog/${article.slug}`);
+                        }}>
+                        <ArticlePreview
+                            key={index}
+                            author={article.author.username}
+                            date={article.createdAt}
+                            title={article.title}
+                            content={article.description}
+                            authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
+                            onLike={() => alert('Liked!')}
+                        />
+                    </TouchableOpacity>
+                ))}
         </ScrollView>
     )
-}
+})
 
 export default ArticlesList
