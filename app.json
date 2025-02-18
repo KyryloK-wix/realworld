@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "kyrylo-medium",
-    "slug": "kyrylo-medium",
+    "name": "realworld-kyrylo",
+    "slug": "realworld-kyrylo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "realworld",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
