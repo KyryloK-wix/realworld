@@ -1,8 +1,15 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, {useEffect} from 'react';
+import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {FontAwesome} from '@expo/vector-icons';
+import articlesStore from "@/store/ArticlesStore";
+import LogInSuggestion from "@/components/LogInSuggestion";
 
-const ArticleView = ({ title, author, date, authorImage, likes, content, onLike }) => {
+const ArticleView = ({title, author, date, authorImage, likes, content, onLike}) => {
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
     return (
         <View style={styles.container}>
             {/* Header Section */}
@@ -10,16 +17,16 @@ const ArticleView = ({ title, author, date, authorImage, likes, content, onLike 
                 <Text style={styles.articleTitle}>{title}</Text>
 
                 <View style={styles.topRow}>
-                    <Image source={{ uri: authorImage }} style={styles.authorImage} />
+                    <Image source={{uri: authorImage}} style={styles.authorImage}/>
                     <View style={styles.textContainer}>
-                        <Text style={styles.authorName}>{author}</Text>
-                        <Text style={styles.articleDate}>{date}</Text>
+                        <Text style={styles.authorName}>{author.authorName}</Text>
+                        <Text style={styles.articleDate}>{formattedDate}</Text>
                     </View>
 
                     <View style={styles.likeContainer}>
                         <Text style={styles.likeCount}>{likes}</Text>
                         <TouchableOpacity onPress={onLike} style={styles.likeButton}>
-                            <FontAwesome name="heart-o" size={20} color="red" />
+                            <FontAwesome name="heart-o" size={20} color="red"/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -29,6 +36,7 @@ const ArticleView = ({ title, author, date, authorImage, likes, content, onLike 
             <View style={styles.body}>
                 <Text style={styles.articleContent}>{content}</Text>
             </View>
+            <LogInSuggestion/>
         </View>
     );
 };

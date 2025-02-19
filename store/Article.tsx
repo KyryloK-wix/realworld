@@ -12,8 +12,8 @@ interface Article {
     description: string;
     body: string;
     tagList: string[];
-    createdAt: string;  // Use `Date` if you want to convert it to Date object later
-    updatedAt: string;  // Same as above
+    createdAt: Date;
+    updatedAt: Date;
     favorited: boolean;
     favoritesCount: number;
     author: Author;

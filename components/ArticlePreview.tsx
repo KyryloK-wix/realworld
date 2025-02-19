@@ -3,6 +3,11 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 const ArticlePreview = ({ author, date, title, content, authorImage, onLike }) => {
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
     return (
         <View style={styles.container}>
             {/* Top Section: Author & Like Button */}
@@ -10,7 +15,7 @@ const ArticlePreview = ({ author, date, title, content, authorImage, onLike }) =
                 <Image source={{ uri: authorImage }} style={styles.authorImage} />
                 <View style={styles.textContainer}>
                     <Text style={styles.authorName}>{author}</Text>
-                    <Text style={styles.articleDate}>{date}</Text>
+                    <Text style={styles.articleDate}>{formattedDate}</Text>
                 </View>
                 <TouchableOpacity onPress={onLike} style={styles.likeButton}>
                     <FontAwesome name="heart-o" size={20} color="red" />
@@ -30,6 +35,7 @@ const ArticlePreview = ({ author, date, title, content, authorImage, onLike }) =
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',

@@ -27,7 +27,8 @@ export const HardCodedArticles = [
 ];
 
 
-const ArticlesList = observer(() => {
+const ArticlesList = () => {
+
     useEffect(() => {
         // Fetch articles when the component mounts
         articlesStore.fetchLatestArticles();
@@ -35,20 +36,19 @@ const ArticlesList = observer(() => {
 
     const router = useRouter();
 
-    console.log(JSON.stringify(articlesStore.articles))
-
     return (
-        <ScrollView>
+        <ScrollView style={{flex: 1}}>
             {
                 articlesStore.articles.map((article, index) => (
                     <TouchableOpacity
+                        key={index}
                         onPress={() => {
                             router.push(`/blog/${article.slug}`);
                         }}>
                         <ArticlePreview
                             key={index}
                             author={article.author.username}
-                            date={article.createdAt}
+                            date={article.updatedAt}
                             title={article.title}
                             content={article.description}
                             authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
@@ -58,6 +58,6 @@ const ArticlesList = observer(() => {
                 ))}
         </ScrollView>
     )
-})
+}
 
-export default ArticlesList
+export default observer(ArticlesList)
