@@ -1,36 +1,48 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {FontAwesome} from '@expo/vector-icons';
+import articlesStore from "@/store/ArticlesStore";
+import usersStore from "@/store/UsersStore";
 
-const ArticlePreview = ({ author, date, title, content, authorImage, onLike }) => {
+const ArticlePreview = ({slug, author, date, title, content, authorImage, favourite}) => {
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
     });
+    let onLike = () => {
+        if (usersStore.loggedInUser) {
+            favourite ? articlesStore.unfavouriteArticle(slug) : articlesStore.favouriteArticle(slug)
+        }
+    };
+
     return (
         <View style={styles.container}>
-            {/* Top Section: Author & Like Button */}
             <View style={styles.topRow}>
-                <Image source={{ uri: authorImage }} style={styles.authorImage} />
+                <Image source={{uri: authorImage}} style={styles.authorImage}/>
                 <View style={styles.textContainer}>
                     <Text style={styles.authorName}>{author}</Text>
                     <Text style={styles.articleDate}>{formattedDate}</Text>
                 </View>
-                <TouchableOpacity onPress={onLike} style={styles.likeButton}>
-                    <FontAwesome name="heart-o" size={20} color="red" />
-                </TouchableOpacity>
+                {usersStore.loggedInUser ?
+                    <TouchableOpacity onPress={onLike} style={styles.likeButton}>
+                        <FontAwesome name={favourite ? 'heart' : 'heart-o'} size={20} color="red"/>
+                    </TouchableOpacity> : <View/>
+                }
             </View>
 
-            {/* Article Title */}
+            {/* Article Title */
+            }
             <Text style={styles.articleTitle}>{title}</Text>
 
-            {/* Article Preview */}
+            {/* Article Preview */
+            }
             <Text style={styles.articleContent}>
                 {content.length > 200 ? content.substring(0, 200) + '...' : content}
             </Text>
         </View>
-    );
+    )
+        ;
 };
 
 const styles = StyleSheet.create({

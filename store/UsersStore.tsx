@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx';
-import {backendHost} from "@/store/ArticlesStore";
+import {backendHost} from "@/store/Host";
 
 interface User {
     email: string;

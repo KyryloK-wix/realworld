@@ -3,8 +3,12 @@ import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import articlesStore from "@/store/ArticlesStore";
 import LogInSuggestion from "@/components/LogInSuggestion";
+import CommentsSection from "@/components/CommentsSection";
+import usersStore from "@/store/UsersStore";
+import {observer} from "mobx-react";
 
 const ArticleView = ({title, author, date, authorImage, likes, content, onLike}) => {
+    let loggedInUser =  usersStore.loggedInUser
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
@@ -12,7 +16,6 @@ const ArticleView = ({title, author, date, authorImage, likes, content, onLike})
     });
     return (
         <View style={styles.container}>
-            {/* Header Section */}
             <View style={styles.header}>
                 <Text style={styles.articleTitle}>{title}</Text>
 
@@ -36,7 +39,7 @@ const ArticleView = ({title, author, date, authorImage, likes, content, onLike})
             <View style={styles.body}>
                 <Text style={styles.articleContent}>{content}</Text>
             </View>
-            <LogInSuggestion/>
+            {loggedInUser ? <CommentsSection/> : <LogInSuggestion/>}
         </View>
     );
 };
@@ -97,4 +100,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ArticleView;
+export default observer(ArticleView);

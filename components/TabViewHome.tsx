@@ -8,7 +8,7 @@ import LogInSuggestion from "@/components/LogInSuggestion";
 
 const ForYou = () => (
     <View style={[styles.scene]}>
-        <ArticlesList/>
+        <ArticlesList favouritesOnly={false}/>
     </View>
 );
 
@@ -16,7 +16,9 @@ const Following = () => {
     let loggedInUser = usersStore.loggedInUser
     return (
         loggedInUser ?
-            <View style={[styles.scene]}><Text>Nothing to show</Text></View> :
+            <View style={[styles.scene]}>
+                <ArticlesList favouritesOnly={true}/>
+            </View> :
             <View style={[styles.scene]}>
                 <LogInSuggestion/>
             </View>
@@ -61,7 +63,7 @@ export default function TabViewHome() {
 
 const styles = StyleSheet.create({
     tabView: {
-        flex: 1, 
+        flex: 1, // Ensures TabView takes full available space
     },
     scene: {
         flex: 1,

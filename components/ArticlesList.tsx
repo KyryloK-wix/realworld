@@ -27,11 +27,11 @@ export const HardCodedArticles = [
 ];
 
 
-const ArticlesList = () => {
+const ArticlesList = ({favouritesOnly = false}) => {
 
     useEffect(() => {
         // Fetch articles when the component mounts
-        articlesStore.fetchLatestArticles();
+        favouritesOnly ? articlesStore.fetchFavouriteArticles() : articlesStore.fetchLatestArticles();
     }, []);
 
     const router = useRouter();
@@ -47,12 +47,13 @@ const ArticlesList = () => {
                         }}>
                         <ArticlePreview
                             key={index}
+                            slug={article.slug}
                             author={article.author.username}
                             date={article.updatedAt}
                             title={article.title}
                             content={article.description}
+                            favourite={article.favorited}
                             authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
-                            onLike={() => alert('Liked!')}
                         />
                     </TouchableOpacity>
                 ))}
