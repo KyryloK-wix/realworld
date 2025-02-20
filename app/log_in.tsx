@@ -4,27 +4,32 @@ import usersStore from "@/store/UsersStore";
 import {useRouter} from "expo-router";
 
 const LogInForm = () => {
-    // State for form inputs
+    // State for form inputs and error handling
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(''); // New state to track errors
     const router = useRouter();
-    let loggedInUser = usersStore.loggedInUser
-
+    let loggedInUser = usersStore.loggedInUser;
 
     const handleLogIn = () => {
+        setError(''); // Clear any previous errors
         usersStore.logIn(email, password).then((user) => {
-                router.push('/')
-            }
-        );
+            router.push('/');
+        }).catch((err) => {
+            setError(err.message); // Set error message
+        });
     };
 
     return (
-        loggedInUser ?
+        loggedInUser ? (
             <View style={styles.container}>
-                <Text style={{textDecorationLine: 'underline'}}>You are already loggedIn {loggedInUser.username}</Text>
-            </View> :
+                <Text style={{textDecorationLine: 'underline'}}>You are already logged
+                    in, {loggedInUser.username}</Text>
+            </View>
+        ) : (
             <View style={styles.container}>
                 <Text style={styles.headerText}>Log In</Text>
+                {error ? <Text style={styles.errorText}>{error}</Text> : null} {/* Show error message if exists */}
                 <TextInput
                     style={styles.inputField}
                     placeholder="Email"
@@ -45,13 +50,12 @@ const LogInForm = () => {
                 </TouchableOpacity>
                 <Text style={styles.linkText}>
                     or
-                    <TouchableOpacity onPress={() => {
-                        router.push('/sign_up')
-                    }}>
+                    <TouchableOpacity onPress={() => router.push('/sign_up')}>
                         <Text style={{textDecorationLine: 'underline'}}>Sign Up</Text>
                     </TouchableOpacity>
                 </Text>
             </View>
+        )
     );
 };
 
@@ -95,6 +99,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 20,
     },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
 });
 
-export default LogInForm
+export default LogInForm;

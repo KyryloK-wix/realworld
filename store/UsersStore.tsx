@@ -1,4 +1,4 @@
-import {makeAutoObservable} from 'mobx';
+import {makeAutoObservable, runInAction} from 'mobx';
 import {backendHost} from "@/store/Host";
 
 interface User {
@@ -16,7 +16,6 @@ interface UserResponse {
 
 
 class UsersStore {
-    users: User[] = [];
     loggedInUser: User = undefined;
 
     constructor() {
@@ -38,14 +37,19 @@ class UsersStore {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error('Log In failed');
+            if (response?.status === 404) {
+                throw new Error('User for provider mail not found');
+            } else if (!response.ok) {
+                throw new Error('Log In failed. General error');
             }
             const data: UserResponse = await response.json();
-            this.loggedInUser = data.user
+            runInAction(() => {
+                this.loggedInUser = data.user;
+            });
             return data.user
         } catch (error) {
-            console.error('Error signing up:', error);
+            console.error('Error logging in:', error);
+            throw error
         }
     }
 
