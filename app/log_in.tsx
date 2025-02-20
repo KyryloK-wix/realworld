@@ -55,7 +55,6 @@ const LogInForm = () => {
     );
 };
 
-// Styles using StyleSheet.create()
 const styles = StyleSheet.create({
     container: {
         flex: 1,

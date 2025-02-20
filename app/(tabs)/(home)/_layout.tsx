@@ -13,7 +13,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
     const [loaded] = useFonts({
-        SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+        SpaceMono: require('/assets/fonts/SpaceMono-Regular.ttf'),
     });
 
     useEffect(() => {
@@ -29,8 +29,8 @@ function RootLayout() {
     return (
         <GluestackUIProvider mode="light"><ThemeProvider value={DefaultTheme}>
             <Stack>
-                <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                <Stack.Screen name="+not-found" options={{headerShown: false}}/>
+                <Stack.Screen name="index" options={{headerShown: false, title: 'Articles'}}/>
+                <Stack.Screen name="blog/[slug]" options={{title: 'Article'}}/>
             </Stack>
         </ThemeProvider></GluestackUIProvider>
     );

@@ -47,8 +47,8 @@ const ArticlesList = ({favouritesOnly = false}) => {
             onRequestClose={() => setIsDropdownVisible(false)}
         >
             <View style={styles.modalOverlay}>
-                <Text>Choose Tags</Text>
                 <View style={styles.dropdownContainer}>
+                    <Text style={{justifyContent: 'center', textAlign: 'center'}}>Choose Tags</Text>
                     <FlatList
                         data={tags}
                         renderItem={({item}) => (

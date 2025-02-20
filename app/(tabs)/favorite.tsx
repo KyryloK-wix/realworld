@@ -4,7 +4,7 @@ import {Text, View} from 'react-native-ui-lib';
 import {SafeAreaProvider} from "react-native-safe-area-context";
 
 
-export default function HomeScreen() {
+export default function FavoriteScreen() {
     return (
         <SafeAreaProvider>
             <View style={styles.header}>
