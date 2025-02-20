@@ -1,17 +1,22 @@
 import {ScrollView, StyleSheet} from 'react-native';
 import React from "react";
-import {Text, View} from 'react-native-ui-lib';
+import {View} from 'react-native-ui-lib';
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import UserProfile from "@/components/UserProfile";
+import LogInSuggestion from "@/components/LogInSuggestion";
+import usersStore from "@/store/UsersStore";
 
 
-export default function HomeScreen() {
+export default function ProfileScreen() {
     return (
         <SafeAreaProvider>
             <View style={styles.header}>
             </View>
             <ScrollView>
                 <View style={styles.titleContainer}>
-                    <Text>Your Profile</Text>
+                    {
+                        usersStore.loggedInUser ? <UserProfile user={usersStore.loggedInUser}/> : <LogInSuggestion/>
+                    }
                 </View>
             </ScrollView>
         </SafeAreaProvider>

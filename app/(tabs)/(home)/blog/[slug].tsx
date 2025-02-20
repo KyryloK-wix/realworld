@@ -25,7 +25,7 @@ const ArticleViewPage = () => {
                 date={article?.updatedAt}
                 title={article?.title}
                 content={article?.body}
-                authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
+                authorImage={article?.author?.image}
                 favourite={article?.favorited}
                 likes={article?.favoritesCount}
             />

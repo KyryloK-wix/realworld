@@ -103,11 +103,11 @@ const ArticlesList = ({favouritesOnly = false}) => {
 }
 
 
-const ArticlesFlatList = observer(({tags, favouritesOnly = false, articlesStore}) => {
+export const ArticlesFlatList = observer(({tags, favouritesOnly = false, articlesStore, author}) => {
 
     function loadArticles(tags: string[], favouritesOnly: boolean) {
         console.log(`Selected tags: ${JSON.stringify(tags)}`);
-        favouritesOnly ? articlesStore.fetchFavouriteArticles(tags) : articlesStore.fetchLatestArticles(tags);
+        favouritesOnly ? articlesStore.fetchFavouriteArticles(tags) : articlesStore.fetchLatestArticles(tags, author);
     }
 
     useEffect(() => {
@@ -144,7 +144,7 @@ const ArticlesFlatList = observer(({tags, favouritesOnly = false, articlesStore}
                             title={article.title}
                             content={article.description}
                             favourite={article.favorited}
-                            authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
+                            authorImage={article.author.image}
                             tags={article.tagList}
                         />
                     </TouchableOpacity>

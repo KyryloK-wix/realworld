@@ -61,9 +61,9 @@ class ArticlesStore {
     };
 
 
-    fetchLatestArticles = async (tags: string[] = []) => {
+    fetchLatestArticles = async (tags: string[] = [], author?: string) => {
         const data: ArticlesResponse = await this.fetchData(
-            `${backendHost}/api/articles?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}`
+            `${backendHost}/api/articles?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}${author ? `&author=${author}` : ''}`
         );
         if (data) {
             console.log(JSON.stringify(data.articles))
