@@ -1,9 +1,6 @@
-import {makeAutoObservable} from 'mobx';
+import {makeAutoObservable, runInAction} from 'mobx';
 import usersStore from "@/store/UsersStore";
 import {backendHost} from "@/store/Host";
-
-
-// export const backendHost = "https://node-express-conduit.appspot.com"
 
 interface ArticlesResponse {
     articles: Article[];
@@ -18,48 +15,72 @@ interface ArticleByIdResponse {
 class ArticlesStore {
     articles: Article[] = [];
     articlesFeed: Article[] = [];
-    articlesCount = 0;
     loading = false;
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    fetchData = async <T>(url: string, method: string = 'GET', body: any = null, headers: any = {}): Promise<T | void> => {
-        this.loading = true;
-        try {
-            let headersToUse = {
-                'Accept': 'application/json',
-                ...headers,
-            }
-            if (usersStore.loggedInUser?.token) {
-                headersToUse['Authorization'] = `Bearer ${usersStore.loggedInUser.token}`;
-            }
-            console.log(headersToUse);
-            const options: RequestInit = {
-                method,
-                headers: headersToUse,
-                body: body ? JSON.stringify(body) : null,
-            };
+    fetchData = (url: string, method: string = 'GET', body: any = null, headers: any = {}) => {
+        runInAction(() => {
+            this.loading = true;
+        });
 
-            const response = await fetch(url, options);
-            if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+        let headersToUse = {
+            'Accept': 'application/json',
+            ...headers,
+        };
 
-            const data: T = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            this.loading = false;
+        if (usersStore.loggedInUser?.token) {
+            headersToUse['Authorization'] = `Bearer ${usersStore.loggedInUser.token}`;
+        }
+
+        const options: RequestInit = {
+            method,
+            headers: headersToUse,
+            body: body ? JSON.stringify(body) : null,
+        };
+
+        console.log(`Url: ${url}. Options: ${JSON.stringify(options, null, 2)}`);
+
+        return fetch(url, options)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            })
+            .finally(() => {
+                runInAction(() => {
+                    this.loading = false;
+                });
+            });
+    };
+
+
+    fetchLatestArticles = async (tags: string[] = []) => {
+        const data: ArticlesResponse = await this.fetchData(
+            `${backendHost}/api/articles?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}`
+        );
+        if (data) {
+            console.log(JSON.stringify(data.articles))
+            runInAction(() => {
+                this.articles = data.articles
+            })
         }
     };
 
-    fetchLatestArticles = async () => {
-        const data = await this.fetchData<ArticlesResponse>(`${backendHost}/api/articles?limit=20&offset=0`);
+    fetchFavouriteArticles = async (tags: string[] = []) => {
+        const data: ArticlesResponse = await this.fetchData(
+            `${backendHost}/api/articles/feed?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}`
+        );
         if (data) {
-            console.log(JSON.stringify(data.articles))
-            this.articles = data.articles
-            this.articlesCount = data.articlesCount;
+            // action(() => {
+            this.articlesFeed = data.articles;
+            // })
         }
     };
 
@@ -69,12 +90,6 @@ class ArticlesStore {
             articleToUpdate.favorited = article.favorited
     }
 
-    fetchFavouriteArticles = async () => {
-        const data = await this.fetchData<ArticlesResponse>(`${backendHost}/api/articles/feed?limit=20&offset=0`);
-        if (data) {
-            this.articlesFeed = data.articles;
-        }
-    };
 
     favouriteArticle = async (slug: string) => {
         const data = await this.fetchData<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}/favorite`, 'POST');

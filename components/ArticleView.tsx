@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import articlesStore from "@/store/ArticlesStore";
 import LogInSuggestion from "@/components/LogInSuggestion";
@@ -7,13 +7,20 @@ import CommentsSection from "@/components/CommentsSection";
 import usersStore from "@/store/UsersStore";
 import {observer} from "mobx-react";
 
-const ArticleView = ({title, author, date, authorImage, likes, content, onLike}) => {
-    let loggedInUser =  usersStore.loggedInUser
+const ArticleView = ({slug, title, author, date, authorImage, likes, content, favourite}) => {
+    let loggedInUser = usersStore.loggedInUser
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
     });
+
+    let onLike = () => {
+        if (usersStore.loggedInUser) {
+            favourite ? articlesStore.unfavouriteArticle(slug) : articlesStore.favouriteArticle(slug)
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -25,13 +32,13 @@ const ArticleView = ({title, author, date, authorImage, likes, content, onLike})
                         <Text style={styles.authorName}>{author.authorName}</Text>
                         <Text style={styles.articleDate}>{formattedDate}</Text>
                     </View>
-
-                    <View style={styles.likeContainer}>
-                        <Text style={styles.likeCount}>{likes}</Text>
-                        <TouchableOpacity onPress={onLike} style={styles.likeButton}>
-                            <FontAwesome name="heart-o" size={20} color="red"/>
-                        </TouchableOpacity>
-                    </View>
+                    {usersStore.loggedInUser ?
+                        <View style={styles.likeContainer}>
+                            <Text style={styles.likeCount}>{likes}</Text>
+                            <TouchableOpacity onPress={onLike} style={styles.likeButton}>
+                                <FontAwesome name={favourite ? 'heart' : 'heart-o'} size={20} color="red"/>
+                            </TouchableOpacity>
+                        </View> : <View/>}
                 </View>
             </View>
 

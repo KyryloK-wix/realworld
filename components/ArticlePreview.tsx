@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import articlesStore from "@/store/ArticlesStore";
 import usersStore from "@/store/UsersStore";
 
-const ArticlePreview = ({slug, author, date, title, content, authorImage, favourite}) => {
+const ArticlePreview = ({slug, author, date, title, content, authorImage, favourite, tags}) => {
     const formattedDate = new Date(date).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
@@ -31,15 +31,17 @@ const ArticlePreview = ({slug, author, date, title, content, authorImage, favour
                 }
             </View>
 
-            {/* Article Title */
-            }
             <Text style={styles.articleTitle}>{title}</Text>
-
-            {/* Article Preview */
-            }
             <Text style={styles.articleContent}>
                 {content.length > 200 ? content.substring(0, 200) + '...' : content}
             </Text>
+            <View style={styles.selectedTagsContainer}>
+                {tags.map((tag, index) => (
+                    <View key={index} style={styles.selectedTag}>
+                        <Text style={styles.selectedTagText}>{tag}</Text>
+                    </View>
+                ))}
+            </View>
         </View>
     )
         ;
@@ -86,6 +88,25 @@ const styles = StyleSheet.create({
     articleContent: {
         fontSize: 14,
         color: '#555',
+    },
+    selectedTagsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        padding: 10,
+    },
+    selectedTag: {
+        backgroundColor: '#e0e0e0',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginRight: 10,
+        marginBottom: 10,
+        borderRadius: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    selectedTagText: {
+        fontSize: 14,
+        color: '#333',
     },
 });
 

@@ -20,12 +20,13 @@ const ArticleViewPage = () => {
     return (
         <ScrollView>
             <ArticleView
+                slug={article?.slug}
                 author={article?.author?.username}
                 date={article?.updatedAt}
                 title={article?.title}
                 content={article?.body}
                 authorImage={"https://randomuser.me/api/portraits/men/1.jpg"}
-                onLike={() => alert('Liked!')}
+                favourite={article?.favorited}
                 likes={article?.favoritesCount}
             />
         </ScrollView>
