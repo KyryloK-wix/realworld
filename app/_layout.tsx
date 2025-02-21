@@ -29,10 +29,11 @@ function RootLayout() {
     return (
         <GluestackUIProvider mode="light"><ThemeProvider value={DefaultTheme}>
             <Stack>
-                <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+                <Stack.Screen name="(tabs)" options={{headerShown: false, title: 'Home'}}/>
                 <Stack.Screen name="+not-found" options={{headerShown: false}}/>
-                {/*<Stack.Screen name="log_in" options={{headerShown: false}}/>*/}
-                {/*<Stack.Screen name="sign_up" options={{headerShown: false}}/>*/}
+                <Stack.Screen name="log_in" options={{title: 'Log In'}}/>
+                <Stack.Screen name="sign_up" options={{title: 'Sign Up'}}/>
+                <Stack.Screen name="create_article" options={{title: 'Create Article'}}/>
             </Stack>
         </ThemeProvider></GluestackUIProvider>
     );

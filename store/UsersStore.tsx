@@ -16,7 +16,7 @@ interface UserResponse {
 
 
 class UsersStore {
-    loggedInUser: User = undefined;
+    loggedInUser: User = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -39,7 +39,7 @@ class UsersStore {
 
             if (response?.status === 404) {
                 throw new Error('User for provider mail not found');
-            } else if(response?.status ===403){
+            } else if (response?.status === 403) {
                 throw new Error('Wrong password provided');
             } else if (!response.ok) {
                 console.log(JSON.stringify(response))
@@ -82,6 +82,11 @@ class UsersStore {
             console.error('Error signing up:', error);
         }
     };
+    logOut = () => {
+        runInAction(() => {
+            this.loggedInUser = null;
+        });
+    }
 }
 
 const usersStore = new UsersStore();

@@ -2,37 +2,40 @@ import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import articlesStore from "@/store/ArticlesStore";
-import {ArticlesFlatList} from "@/components/ArticlesList";
+import {useRouter} from "expo-router";
+import {ArticlesFlatList} from "@/components/ArticlesFlatList";
 
 const UserProfile = ({user}) => {
+    const router = useRouter();
+
+    let onCreate = () => {
+        router.push("/create_article")
+    };
     return (
-        <View style={styles.container}>
-
-            {/* Section 1: Profile Image, Username, and Edit Button */}
-            <View style={styles.profileSection}>
-                {/* Edit Button placed outside the profile image */}
-                <TouchableOpacity style={styles.editButton}>
-                    <FontAwesome name="edit" size={24} color="#007BFF"/>
-                </TouchableOpacity>
-
-                <Image
-                    source={{uri: user.image}}
-                    style={styles.profileImage}
-                />
-
-                <Text style={styles.username}>{user.username}</Text>
-            </View>
-
-            {/* Section 2: Create Article Button */}
-            <View style={styles.createArticleSection}>
-                <TouchableOpacity style={styles.createArticleButton}>
-                    <FontAwesome name="plus" size={16} color="#007BFF"/>
-                    <Text style={styles.createArticleText}>Create Article</Text>
-                </TouchableOpacity>
-            </View>
+        <View style={{flex: 1}}>
             <View style={styles.container}>
-                <ArticlesFlatList favouritesOnly={false} articlesStore={articlesStore} author={user.username}/>
+                <View style={styles.profileSection}>
+                    <TouchableOpacity style={styles.editButton}>
+                        <FontAwesome name="edit" size={24} color="#007BFF"/>
+                    </TouchableOpacity>
+
+                    <Image
+                        source={{uri: user.image}}
+                        style={styles.profileImage}
+                    />
+
+                    <Text style={styles.username}>{user.username}</Text>
+                </View>
+
+                <View style={styles.createArticleSection}>
+                    <TouchableOpacity onPress={onCreate} style={styles.createArticleButton}>
+                        <FontAwesome name="plus" size={16} color="#007BFF"/>
+                        <Text style={styles.createArticleText}>Create Article</Text>
+                    </TouchableOpacity>
+                </View>
+
             </View>
+            <ArticlesFlatList favouritesOnly={false} articlesStore={articlesStore} author={user.username}/>
         </View>
     );
 };
@@ -40,7 +43,6 @@ const UserProfile = ({user}) => {
 // Styles
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
@@ -55,8 +57,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0, // Moves the button above the profile image
         left: '50%', // Centers the button horizontally
-        // transform: [{ translateX: 0 }], // Adjusts for the button size to keep it centered
-        // backgroundColor: '#007BFF',
         borderRadius: 20,
         padding: 5,
     },

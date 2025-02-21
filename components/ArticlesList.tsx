@@ -1,19 +1,13 @@
-import {FlatList, Modal, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {useEffect, useState} from "react";
-import ArticlePreview from "@/components/ArticlePreview";
-import {useRouter} from 'expo-router';
 import {observer} from "mobx-react";
 import articlesStore from "@/store/ArticlesStore";
 import {FontAwesome} from '@expo/vector-icons';
 
-import {
-    Checkbox,
-    CheckboxIndicator,
-    CheckboxLabel,
-    CheckboxIcon,
-} from "@/components/ui/checkbox"
+import {Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel,} from "@/components/ui/checkbox"
 import {CheckIcon} from "@/components/ui/icon"
 import tagsStore from "@/store/TagsStore";
+import {ArticlesFlatList} from "@/components/ArticlesFlatList";
 
 
 const ArticlesList = ({favouritesOnly = false}) => {
@@ -96,61 +90,11 @@ const ArticlesList = ({favouritesOnly = false}) => {
                 ))}
             </View>
             {isDropdownVisible && renderModal()}
-            <ArticlesFlatList tags={selectedTags} favouritesOnly={favouritesOnly} articlesStore={articlesStore}/>
+            <ArticlesFlatList tags={selectedTags} favouritesOnly={favouritesOnly}/>
         </View>
 
     )
 }
-
-
-export const ArticlesFlatList = observer(({tags, favouritesOnly = false, articlesStore, author}) => {
-
-    function loadArticles(tags: string[], favouritesOnly: boolean) {
-        console.log(`Selected tags: ${JSON.stringify(tags)}`);
-        favouritesOnly ? articlesStore.fetchFavouriteArticles(tags) : articlesStore.fetchLatestArticles(tags, author);
-    }
-
-    useEffect(() => {
-        loadArticles(tags, favouritesOnly);
-    }, [tags, favouritesOnly]);
-
-    const router = useRouter();
-
-
-    return (
-        <ScrollView style={{flex: 1}}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={articlesStore.loading}  // Whether it's refreshing or not
-                            onRefresh={() => {
-                                loadArticles(tags, favouritesOnly);
-                            }}  // Function to call when refresh is triggered
-                            tintColor="blue"  // Color of the refresh indicator
-                            title="Pull to refresh..."  // Title of the refresh indicator
-                        />
-                    }>
-            {
-                articlesStore.articles.map((article, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => {
-                            router.push(`/blog/${article.slug}`);
-                        }}>
-                        <ArticlePreview
-                            key={index}
-                            slug={article.slug}
-                            author={article.author.username}
-                            date={article.updatedAt}
-                            title={article.title}
-                            content={article.description}
-                            favourite={article.favorited}
-                            authorImage={article.author.image}
-                            tags={article.tagList}
-                        />
-                    </TouchableOpacity>
-                ))}
-        </ScrollView>);
-})
 
 
 const styles = StyleSheet.create({

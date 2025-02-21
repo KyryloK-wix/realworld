@@ -7,6 +7,13 @@ interface ArticlesResponse {
     articlesCount: number;
 }
 
+interface CreateArticle {
+    title: string;
+    description: string;
+    body: string;
+    tagList: string[];
+}
+
 interface ArticleByIdResponse {
     article: Article
 }
@@ -15,19 +22,21 @@ interface ArticleByIdResponse {
 class ArticlesStore {
     articles: Article[] = [];
     articlesFeed: Article[] = [];
+    articlesForUser: Article[] = [];
     loading = false;
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    fetchData = (url: string, method: string = 'GET', body: any = null, headers: any = {}) => {
+    performApiCall = (url: string, method: string = 'GET', body: any = null, headers: any = {}) => {
         runInAction(() => {
             this.loading = true;
         });
 
         let headersToUse = {
             'Accept': 'application/json',
+            'Content-Type': 'application/json',
             ...headers,
         };
 
@@ -62,19 +71,23 @@ class ArticlesStore {
 
 
     fetchLatestArticles = async (tags: string[] = [], author?: string) => {
-        const data: ArticlesResponse = await this.fetchData(
+        const data: ArticlesResponse = await this.performApiCall(
             `${backendHost}/api/articles?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}${author ? `&author=${author}` : ''}`
         );
         if (data) {
             console.log(JSON.stringify(data.articles))
             runInAction(() => {
-                this.articles = data.articles
+                if (author) {
+                    this.articlesForUser = data.articles
+                } else {
+                    this.articles = data.articles
+                }
             })
         }
     };
 
     fetchFavouriteArticles = async (tags: string[] = []) => {
-        const data: ArticlesResponse = await this.fetchData(
+        const data: ArticlesResponse = await this.performApiCall(
             `${backendHost}/api/articles/feed?limit=20&offset=0${tags.length == 0 ? '' : `&tag=${tags[0]}`}`
         );
         if (data) {
@@ -92,14 +105,14 @@ class ArticlesStore {
 
 
     favouriteArticle = async (slug: string) => {
-        const data = await this.fetchData<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}/favorite`, 'POST');
+        const data = await this.performApiCall<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}/favorite`, 'POST');
         if (data) {
             this.updateFavouredArticle(data.article)
         }
     };
 
     unfavouriteArticle = async (slug: string) => {
-        const data = await this.fetchData<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}/favorite`, 'DELETE');
+        const data = await this.performApiCall<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}/favorite`, 'DELETE');
         if (data) {
             this.updateFavouredArticle(data.article)
         }
@@ -109,12 +122,26 @@ class ArticlesStore {
         if (this.articles.find(a => a.slug === slug)) {
             console.log("Article already exists")
         } else {
-            const data = await this.fetchData<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}`);
+            const data = await this.performApiCall<ArticleByIdResponse>(`${backendHost}/api/articles/${slug}`);
             if (data) {
                 this.articles.push(data.article);
             }
         }
     };
+
+    createArticle = async (title: string,
+                           description: string,
+                           body: string,
+                           tagList: string[]) => {
+        await this.performApiCall(`${backendHost}/api/articles`, 'POST', {
+            article: {
+                title,
+                description,
+                body,
+                tagList
+            }
+        })
+    }
 }
 
 const articlesStore = new ArticlesStore();
