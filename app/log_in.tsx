@@ -1,23 +1,57 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import usersStore from "@/store/UsersStore";
 import {useRouter} from "expo-router";
+import {
+    FormControl,
+    FormControlError,
+    FormControlErrorIcon,
+    FormControlErrorText,
+    FormControlLabel,
+    FormControlLabelText
+} from "@/components/ui/form-control";
+import {Input, InputField} from "@/components/ui/input";
+import {AlertCircleIcon} from "@/components/ui/icon";
+
+import {Button, ButtonText} from "@/components/ui/button"
+import {observer} from "mobx-react";
 
 const LogInForm = () => {
-    // State for form inputs and error handling
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(''); // New state to track errors
+    const [apiError, setApiError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
     const router = useRouter();
     let loggedInUser = usersStore.loggedInUser;
 
     const handleLogIn = () => {
-        setError(''); // Clear any previous errors
-        usersStore.logIn(email, password).then((user) => {
-            router.push('/');
-        }).catch((err) => {
-            setError(err.message); // Set error message
-        });
+        setApiError(''); // Clear any previous errors
+        setEmailError(''); // Clear email error
+        setPasswordError(''); // Clear password error
+
+        let valid = true;
+        if (!email) {
+            setEmailError('Email is required');
+            valid = false;
+        }
+
+        if (!password) {
+            setPasswordError('Password is required');
+            valid = false;
+        }
+
+        if (valid) {
+            // If all fields are valid, proceed with login
+            usersStore.logIn(email, password).then(() => {
+                router.push('/');
+            }).catch((err) => {
+                setApiError(err.message);
+                console.log(`Error was set ${err.message}`)
+            });
+        }
     };
 
     return (
@@ -29,31 +63,52 @@ const LogInForm = () => {
         ) : (
             <View style={styles.container}>
                 <Text style={styles.headerText}>Log In</Text>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null} {/* Show error message if exists */}
-                <TextInput
-                    style={styles.inputField}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.inputField}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <TouchableOpacity style={styles.button} onPress={handleLogIn}>
-                    <Text style={styles.buttonText}>Log In</Text>
-                </TouchableOpacity>
-                <Text style={styles.linkText}>
-                    or
+                <FormControl isInvalid={!!emailError} size="md" isRequired>
+                    <FormControlLabel>
+                        <FormControlLabelText>Email</FormControlLabelText>
+                    </FormControlLabel>
+                    <Input className="my-1" size="md">
+                        <InputField
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            placeholder="Email"
+                        />
+                    </Input>
+                    <FormControlError>
+                        <FormControlErrorIcon as={AlertCircleIcon}/>
+                        <FormControlErrorText>{emailError}</FormControlErrorText>
+                    </FormControlError>
+                </FormControl>
+
+                <FormControl isInvalid={!!passwordError} size="md" isRequired>
+                    <FormControlLabel>
+                        <FormControlLabelText>Password</FormControlLabelText>
+                    </FormControlLabel>
+                    <Input className="my-1" size="md">
+                        <InputField
+                            type="password"
+                            value={password}
+                            onChangeText={setPassword}
+                            placeholder="Password"
+                        />
+                    </Input>
+                    <FormControlError>
+                        <FormControlErrorIcon as={AlertCircleIcon}/>
+                        <FormControlErrorText>{passwordError}</FormControlErrorText>
+                    </FormControlError>
+                </FormControl>
+                {apiError ? <Text style={styles.errorText}>{apiError}</Text> : null}
+                <Button className="w-full self-center mt-4" onPress={handleLogIn}>
+                    <ButtonText>Log In</ButtonText>
+                </Button>
+                <View style={styles.linkContainer}>
+                    <Text style={{fontSize: 16,}}>or </Text>
                     <TouchableOpacity onPress={() => router.push('/sign_up')}>
-                        <Text style={{textDecorationLine: 'underline'}}>Sign Up</Text>
+                        <Text style={[styles.linkText, {textDecorationLine: 'underline'}]}>Sign Up</Text>
                     </TouchableOpacity>
-                </Text>
+                </View>
             </View>
         )
     );
@@ -88,8 +143,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    linkContainer: {
+        flexDirection: 'row', // Arrange items horizontally
+        justifyContent: 'center', // Center them horizontally
+        alignItems: 'center', // Align them vertically
+        marginTop: 20, // Add spacing from the previous content
+    },
     linkText: {
-        textAlign: 'center',
         color: 'blue',
         fontSize: 16,
     },
@@ -107,4 +167,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LogInForm;
+export default observer(LogInForm);

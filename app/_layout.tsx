@@ -31,6 +31,8 @@ function RootLayout() {
             <Stack>
                 <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
                 <Stack.Screen name="+not-found" options={{headerShown: false}}/>
+                {/*<Stack.Screen name="log_in" options={{headerShown: false}}/>*/}
+                {/*<Stack.Screen name="sign_up" options={{headerShown: false}}/>*/}
             </Stack>
         </ThemeProvider></GluestackUIProvider>
     );

@@ -39,7 +39,10 @@ class UsersStore {
 
             if (response?.status === 404) {
                 throw new Error('User for provider mail not found');
+            } else if(response?.status ===403){
+                throw new Error('Wrong password provided');
             } else if (!response.ok) {
+                console.log(JSON.stringify(response))
                 throw new Error('Log In failed. General error');
             }
             const data: UserResponse = await response.json();
