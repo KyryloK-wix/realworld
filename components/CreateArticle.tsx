@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import {useRouter} from "expo-router";
 import {
     FormControl,
@@ -13,7 +13,6 @@ import {Input, InputField} from "@/components/ui/input";
 import {AlertCircleIcon} from "@/components/ui/icon";
 import {Button, ButtonText} from "@/components/ui/button";
 import articlesStore from "@/store/ArticlesStore";
-import {actions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 
 const CreateArticle = () => {
     const [title, setTitle] = useState('');
@@ -67,6 +66,43 @@ const CreateArticle = () => {
             })
         }
     };
+
+    function renderArticleBodyTextArea() {
+        if (Platform.OS === 'ios' || Platform.OS === 'android') {
+            const rem = require('react-native-pell-rich-editor');
+            return <>
+                <rem.RichEditor
+                    ref={richText}
+                    style={styles.richEditor}
+                    placeholder="Write your article content here"
+                    initialContentHTML={articleText}
+                    onChange={handleEditorChange}
+                />
+                <rem.RichToolbar
+                    editor={richText}
+                    actions={[
+                        rem.actions.setBold,
+                        rem.actions.setItalic,
+                        rem.actions.insertOrderedList,
+                        rem.actions.insertBulletsList,
+                        rem.actions.insertLink,
+                        rem.actions.insertImage,
+                    ]}
+                    iconTint="#000"
+                />
+            </>;
+        } else {
+            return <Input className="my-1" size="md">
+                <InputField
+                    value={articleText}
+                    onChangeText={setArticleText}
+                    placeholder="Write your article content here"
+                    multiline={true}
+                    numberOfLines={6}
+                />
+            </Input>;
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -132,36 +168,12 @@ const CreateArticle = () => {
                 )}
             </FormControl>
 
-            {/* WYSIWYG Article Text Field */}
-            {/*<View style={{flex: 1,   alignItems: 'stretch'}}>*/}
-
-
             <FormControl isInvalid={!!articleTextError} size="md" isRequired style={{flex: 1}}>
                 <FormControlLabel>
                     <FormControlLabelText>Article Text</FormControlLabelText>
                 </FormControlLabel>
                 <View style={{flex: 1}}>
-                    {/*<ScrollView style={styles.editorContainer}>*/}
-                    <RichEditor
-                        ref={richText}
-                        style={styles.richEditor}
-                        placeholder="Write your article content here"
-                        initialContentHTML={articleText}
-                        onChange={handleEditorChange}
-                    />
-                    <RichToolbar
-                        editor={richText}
-                        actions={[
-                            actions.setBold,
-                            actions.setItalic,
-                            actions.insertOrderedList,
-                            actions.insertBulletsList,
-                            actions.insertLink,
-                            actions.insertImage,
-                        ]}
-                        iconTint="#000"
-                    />
-                    {/*</ScrollView>*/}
+                    {renderArticleBodyTextArea()}
                 </View>
                 {articleTextError && (
                     <FormControlError>
@@ -170,7 +182,6 @@ const CreateArticle = () => {
                     </FormControlError>
                 )}
             </FormControl>
-            {/*</View>*/}
             {/* Publish Button */}
             {apiError ? <Text style={styles.errorText}>{apiError}</Text> : null}
             <Button className="w-full self-center mt-4" onPress={handlePublish}>
